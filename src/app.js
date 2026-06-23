@@ -4,34 +4,17 @@ const app = express();
 const PORT = 3000
 
 
-app.use("/home", (req, res) => {
-    res.send("Home Page !!!!!!!!!!!!")
-})
-app.use("/about", (req, res) => {
+app.use("/user", (req, res,next) => {
+ console.log("Route first")
+ next();
+//  res.send("Route Handler !!!!!!!!!!!!")
+},(req,res)=>{
+    console.log("Rout2")
+    res.send("Route2 Handler !!!!!!!!!!!!")
 
-    res.send("About page !!!!!!!!!!!!")
-})
-app.get("/user",(req,res)=>{
-     console.log(req.query)
-    res.send({name:"vishnu",lastname:"Biradar"})
-})
-app.get("/customer/:customeId",(req,res)=>{
-     console.log(req.params)
-    res.send({name:"vishnu",lastname:"Biradar"})
-})
-app.post("/user",(req,res)=>{
-    res.send("data save succsfully")
-})
-app.delete("/user",(req,res)=>{
 
-    res.send("Delete user succefully")
+
 })
-
-// app.use("/",(req, res) => {
-
-//     res.send("This is default page")
-// })
-
 
 app.listen(PORT, () => {
     console.log(`App ringing in ${PORT}`)
