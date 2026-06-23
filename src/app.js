@@ -12,6 +12,11 @@ app.use("/about", (req, res) => {
     res.send("About page !!!!!!!!!!!!")
 })
 app.get("/user",(req,res)=>{
+     console.log(req.query)
+    res.send({name:"vishnu",lastname:"Biradar"})
+})
+app.get("/customer/:customeId",(req,res)=>{
+     console.log(req.params)
     res.send({name:"vishnu",lastname:"Biradar"})
 })
 app.post("/user",(req,res)=>{
