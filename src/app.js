@@ -4,15 +4,6 @@ const User = require("./models/user");
 const app = express();
 const PORT = 3000
 
-// app.post("/signup", async (req, res) => {
-//     try {
-//         const doc = new User({ firstName: "vishnu ", lastName: "biradar", emailId: "vishnu@biradar.con", password: "vsb123" });
-//         await doc.save();
-//         res.send("User added  successfully");
-//     } catch (error) {
-//         console.error("Error saving document:", error);
-//     }
-// })
 app.use(express.json());
 app.post("/signup", async (req, res) => {
     try {
@@ -34,13 +25,30 @@ app.post("/signup", async (req, res) => {
         res.status(500).send("Something went wrong");
     }
 });
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.json(users);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+app.post("/user", async (req, res) => {
+
+    try {
+        const { emailId } = req.body;
+        // const users = await User.findOne({ emailId });
+        const users = await User.find({ emailId });
+        if (users) {
+
+
+            res.json(users)
+        } else {
+            res.status(404).send("given data is not found")
+        }
+    } catch (error) {
+        res.status(500).send("Something went wrong");
+    }
+})
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.json(users);
+    } catch (error) {
+        res.status(500).send("Something went wrong");
+    }
 });
 connectDatabse().then((res) => {
     console.log("Database connected sucessfully")
