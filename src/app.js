@@ -8,7 +8,6 @@ app.use(express.json());
 app.post("/signup", async (req, res) => {
     try {
         const { firstName, lastName, emailId, password } = req.body;
-
         const user = new User({
             firstName,
             lastName,
@@ -25,12 +24,46 @@ app.post("/signup", async (req, res) => {
         res.status(500).send("Something went wrong");
     }
 });
-app.post("/user", async (req, res) => {
+app.delete("/user", async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const users = await User.findByIdAndDelete(userId);
+        if (users) {  
+            res.send("Datat delete sucess fully")
+        } else {
+            res.status(404).send("given data is not found")
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send("Something went wrong")
+    }
+})
+app.put("/user", async (req, res) => {
+    try {
+        const { _id, ...updateData } = req.body;
 
+        const user = await User.findByIdAndUpdate(
+            _id,
+            updateData,
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.send("Uodated user");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Something went wrong");
+    }
+});
+
+app.post("/user", async (req, res) => {
     try {
         const { emailId } = req.body;
-        // const users = await User.findOne({ emailId });
-        const users = await User.find({ emailId });
+        const users = await User.findOne({ emailId });
+        // const users = await User.find({ emailId });
         if (users) {
 
 
