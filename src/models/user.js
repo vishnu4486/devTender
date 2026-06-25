@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+var validator = require('validator');
 const { Schema } = mongoose;
 //I need verify this with atul API
 const userSchema = new Schema({
@@ -16,6 +17,11 @@ const userSchema = new Schema({
         required: true,
         unique: true,
         trim: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error("Given Email is not valid.", value);
+            }
+        }
     },
     password: {
         type: String,
