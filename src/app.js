@@ -7,28 +7,43 @@ const PORT = 3000
 app.use(express.json());
 app.post("/signup", async (req, res) => {
     try {
-        const { firstName, lastName, emailId, password } = req.body;
-        const user = new User({
-            firstName,
-            lastName,
-            emailId,
-            password
-        });
+        // const { firstName, lastName, emailId, password } = req.body;
+        const user = new User(req.body);
         await user.save();
         res.status(201).json({
             message: "User added successfully",
             data: user
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Something went wrong");
+        // console.error("test",error);
+        // res.status(500).send("Something went wrong",error.message);
+
+        if (error.code === 11000) {
+            return res.status(400).json({
+                message: "Email already exists",
+                error: error.message,
+            });
+        }
+
+        if (error.name === "ValidationError") {
+            return res.status(400).json({
+                message: "Validation failed",
+                error: error.message,
+            });
+        }
+
+        res.status(500).json({
+            message: "Something went wrong",
+            error: error.message,
+        });
+
     }
 });
 app.delete("/user", async (req, res) => {
     try {
         const { userId } = req.body;
         const users = await User.findByIdAndDelete(userId);
-        if (users) {  
+        if (users) {
             res.send("Datat delete sucess fully")
         } else {
             res.status(404).send("given data is not found")
@@ -38,14 +53,23 @@ app.delete("/user", async (req, res) => {
         res.status(500).send("Something went wrong")
     }
 })
-app.put("/user", async (req, res) => {
+app.put("/user/:userId", async (req, res) => {
     try {
-        const { _id, ...updateData } = req.body;
+        const _id = req.params?.userId
+        const { ...updateData } = req.body;
+        const ALLOW_UPDATE=["age","skills","photoUrl","gender","about"]
 
+          const updateKeys = Object.keys(updateData);
+
+          const UPDATE_FLAG = updateKeys.every(key => ALLOW_UPDATE.includes(key));
+          console.log("UPDATE_FLAG",UPDATE_FLAG)
+        if(!UPDATE_FLAG){
+            return res.status(400).send("Updated not allowed")
+        }
         const user = await User.findByIdAndUpdate(
             _id,
             updateData,
-            { new: true }
+            { returnDocument: "after", runValidators: true }
         );
 
         if (!user) {
@@ -54,6 +78,12 @@ app.put("/user", async (req, res) => {
 
         res.send("Uodated user");
     } catch (error) {
+        if (error.name === "ValidationError") {
+            return res.status(400).json({
+                message: "Validation failed",
+                error: error.message,
+            });
+        }
         console.error(error);
         res.status(500).send("Something went wrong");
     }
