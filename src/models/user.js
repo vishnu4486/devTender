@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
-var validator = require('validator');
+let validator = require('validator');
 const { Schema } = mongoose;
-//I need verify this with atul API
+
 const userSchema = new Schema({
 
     firstName: {
@@ -25,10 +25,7 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
-        trim: true,
-        minLength: 5,
-        maxLength: 9
+        required: true
     },
     age: {
         type: Number,

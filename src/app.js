@@ -1,44 +1,69 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const { connectDatabse } = require("./config/database");
+const { validateSignUpData } = require("./utils/validation")
 const User = require("./models/user");
 const app = express();
 const PORT = 3000
 
 app.use(express.json());
+app.post("/login", async (req, res) => {
+    try {
+
+        const { emailId, password } = req.body;
+        console.log("emailId, password", emailId, password)
+        const user = await User.findOne({ emailId })
+        if (!user) {
+            throw new Error("invalid credentials")
+        }
+        let data = await bcrypt.compare(password, user.password)
+        if (data) {
+            res.status(200).send("Login sucessfully")
+        } else {
+            throw new Error("invalid credentials")
+        }
+    } catch (error) {
+        res.status(400).json({
+            message: error.message,
+        });
+    }
+});
 app.post("/signup", async (req, res) => {
     try {
-        // const { firstName, lastName, emailId, password } = req.body;
-        const user = new User(req.body);
+        validateSignUpData(req);
+        const { firstName, lastName, emailId, password } = req.body;
+        const passwordHas = await bcrypt.hash(password, 10)
+        const user = new User({ firstName, lastName, emailId, password: passwordHas });
+
         await user.save();
         res.status(201).json({
             message: "User added successfully",
-            data: user
+            data: user,
         });
     } catch (error) {
-        // console.error("test",error);
-        // res.status(500).send("Something went wrong",error.message);
-
-        if (error.code === 11000) {
-            return res.status(400).json({
-                message: "Email already exists",
-                error: error.message,
-            });
-        }
-
-        if (error.name === "ValidationError") {
-            return res.status(400).json({
-                message: "Validation failed",
-                error: error.message,
-            });
-        }
-
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error.message,
+        res.status(400).json({
+            message: error.message,
         });
-
     }
 });
+// app.post("/signup", async (req, res) => {
+//     try {
+//         validateSignUpData(req)
+
+//         const { firstName, lastName, emailId, password } = req.body;
+//         const passwordHas= await bcrypt.hash(password,10)
+//         const user = new User({ firstName, lastName, emailId, password:passwordHas });
+//         await user.save();
+//         res.status(201).json({
+//             message: "User added successfully",
+//             data: user
+//         });
+//     } catch (err) {
+//         console.log("err",err)
+//          res.status(400).send("Error : ", err.message)
+
+//     }
+// });
 app.delete("/user", async (req, res) => {
     try {
         const { userId } = req.body;
@@ -57,13 +82,13 @@ app.put("/user/:userId", async (req, res) => {
     try {
         const _id = req.params?.userId
         const { ...updateData } = req.body;
-        const ALLOW_UPDATE=["age","skills","photoUrl","gender","about"]
+        const ALLOW_UPDATE = ["age", "skills", "photoUrl", "gender", "about"]
 
-          const updateKeys = Object.keys(updateData);
+        const updateKeys = Object.keys(updateData);
 
-          const UPDATE_FLAG = updateKeys.every(key => ALLOW_UPDATE.includes(key));
-          console.log("UPDATE_FLAG",UPDATE_FLAG)
-        if(!UPDATE_FLAG){
+        const UPDATE_FLAG = updateKeys.every(key => ALLOW_UPDATE.includes(key));
+        console.log("UPDATE_FLAG", UPDATE_FLAG)
+        if (!UPDATE_FLAG) {
             return res.status(400).send("Updated not allowed")
         }
         const user = await User.findByIdAndUpdate(
