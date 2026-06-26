@@ -15,10 +15,11 @@ app.use(cookieParser());
 const authRouter=require("./routes/auth")
 const profileRouter=require("./routes/profile")
 const userRouter=require("./routes/user");
+const requestRouter =require("./routes/request")
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",userRouter)
-console.log("Updated API  1")
+app.use("/",requestRouter)
 
 app.post("/sendConnectRequest",userAuth,(req,res)=>{
   const user=req.user;
