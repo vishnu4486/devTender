@@ -35,7 +35,7 @@ profileRouter.put("/profile/:userId", userAuth, async (req, res) => {
     console.log("Updated API");
     const _id = req.params?.userId;
     const { ...updateData } = req.body;
-    const ALLOW_UPDATE = ["age", "skills", "photoUrl", "gender", "about"];
+    const ALLOW_UPDATE = ["age", "skills", "photoUrl", "gender", "about","firstName","lastName"]
 
     const updateKeys = Object.keys(updateData);
 

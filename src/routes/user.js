@@ -58,7 +58,9 @@ userRouter.get("/user/request/recived", userAuth, async (req, res) => {
       toUserId: _id,
       status: "interested",
     }).populate("fromUserId", SHOW_DATA);
-    res.json({ message: "data fetch sucessfully", data });
+    const newData=data.map((d)=>d.fromUserId)
+    console.log("data",data)
+    res.json({ message: "data fetch sucessfully", "data":newData });
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }

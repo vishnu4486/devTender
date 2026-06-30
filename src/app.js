@@ -1,5 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const cors =require("cors")
+
 
 const { connectDatabse } = require("./config/database");
 const { validateSignUpData } = require("./utils/validation");
@@ -8,6 +10,11 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { userAuth } = require('./middelwares/auth')
 const app = express();
+app.use(cors({
+    origin: "http://localhost:5173", // React app URL
+    credentials: true,
+  }))
+
 const PORT = 3000;
 
 app.use(express.json());
