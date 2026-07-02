@@ -7,7 +7,7 @@ async function userAuth(req, res, next) {
             // throw new Error("Token is valid");
             return res.status(401).send("Please log in.....")
         }
-        const decoded = await jwt.verify(token, "Dev@vsb");
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
         const { _id } = decoded;
         const user = await User.findById(_id);
         if (!user) {

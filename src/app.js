@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const cors =require("cors")
-
+require("dotenv").config()
 
 const { connectDatabse } = require("./config/database");
 const { validateSignUpData } = require("./utils/validation");

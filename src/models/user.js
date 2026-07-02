@@ -61,7 +61,7 @@ const userSchema = new Schema({
 
 userSchema.methods.getJWT = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id }, "Dev@vsb", { expiresIn: '10h' });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '10h' });
     return token;
 };
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
