@@ -2,6 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middelwares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
+const {run}=require("./../utils/sendEmail")
 
 const requestRouter = express.Router();
 requestRouter.post(
@@ -38,6 +39,8 @@ requestRouter.post(
         status,
       });
       const data = await connectionRequest.save();
+      const emailRes= await run("This subject ","this is the body");
+      console.log("Emails",emailRes)
       res.json({
         message: "Connect Request sent Successfully",
         data,

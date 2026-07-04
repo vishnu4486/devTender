@@ -2,6 +2,10 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const cors =require("cors")
 require("dotenv").config()
+const http= require("http")
+const iniTilizaScocket= require("./utils/socket")
+
+require("./utils/cronjob")
 
 const { connectDatabse } = require("./config/database");
 const { validateSignUpData } = require("./utils/validation");
@@ -33,10 +37,13 @@ app.post("/sendConnectRequest",userAuth,(req,res)=>{
 res.send(user)
 
 })
+const server =http.createServer(app);
+iniTilizaScocket(server);
+
 connectDatabse()
   .then((res) => {
     console.log("Database connected sucessfully");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`App ringing in ${PORT}`);
     });
   })
